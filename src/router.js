@@ -19,6 +19,13 @@ const routers = [
             title: '错误页面'
         },
         component: (resolve) => require(['./views/error.vue'], resolve)
+    },
+    {
+        path: '*',
+        meta: {
+            title: '错误页面'
+        },
+        component: (resolve) => require(['./views/error.vue'], resolve)
     }
 ];
 export default routers;

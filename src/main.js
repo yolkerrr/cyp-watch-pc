@@ -18,26 +18,27 @@ const RouterConfig = {
 const router = new VueRouter(RouterConfig);
 
 window.checkLoginStatus = (to) =>{
-    return (to.path !== "/404" && to.path !== "/" && !!window.localStorage.getItem(`${config.projectKey}-token`));
+    return (to.path !== "/error" && to.path !== "/" && !!window.localStorage.getItem(`${config.projectKey}-token`));
 };
 
 router.beforeEach((to, from, next) => {
     ViewUI.LoadingBar.start();
     Util.title(to.meta.title);
-    next();
-    // if(to.matched.length ===0){
-    //     next({
-    //         path:"404"
-    //     })
-    // }else{
-    //     if(checkLoginStatus(to)){
-    //         next();
-    //     }else{
-    //         next({
-    //             path:"login"
-    //         })
-    //     }
-    // }
+    if(to.matched[0]["path"] === "*"){
+        next();
+    }else{
+        if(to.path !== "/error" && to.path !== "/" && to.path !== "login"){
+            if(!window.localStorage.getItem(`${config.projectKey}-token`)){
+                next({
+                    path:"login"
+                });
+            }else{
+                next();
+            }
+        }else{
+            next();
+        }
+    }
 });
 
 router.afterEach((to, from, next) => {

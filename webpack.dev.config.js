@@ -18,6 +18,7 @@ module.exports = merge(webpackBaseConfig, {
         chunkFilename: '[name].chunk.js'
     },
     devServer:{
+        port:8888,
         proxy: {
             '/pc': {
                 target: 'http://localhost:3000/',
