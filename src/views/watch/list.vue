@@ -182,23 +182,23 @@
             }
         },
         async created(){
-            this.$Spin.show({
-                render: (h) => {
-                    return h('div', [
-                        h('Icon', {
-                            'class': 'demo-spin-icon-load',
-                            props: {
-                                type: 'ios-loading',
-                                size: 18
-                            }
-                        }),
-                        h('div', '正在加载中...')
-                    ])
-                }
-            });
-            setTimeout(() => {
-                this.$Spin.hide();
-            }, 3000);
+            // this.$Spin.show({
+            //     render: (h) => {
+            //         return h('div', [
+            //             h('Icon', {
+            //                 'class': 'demo-spin-icon-load',
+            //                 props: {
+            //                     type: 'ios-loading',
+            //                     size: 18
+            //                 }
+            //             }),
+            //             h('div', '正在加载中...')
+            //         ])
+            //     }
+            // });
+            // setTimeout(() => {
+            //     this.$Spin.hide();
+            // }, 3000);
         }
     }
 </script>

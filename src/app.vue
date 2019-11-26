@@ -55,7 +55,7 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        background-image: url("./images/login-bg.jpg");
+        background-image: url("https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/login-bg.jpg?Expires=1574776932&OSSAccessKeyId=TMP.hgxd3y692sdBNFRjmrQpa4mwLqNUSN3ns55KJ2AAwX66jRKKYUs6XfrZYYUFLSDp67eY9feBKQdt9aC3DQuq3FURcWqmwsjYYNUBpzBwPq2cMBWtvtZYVsqWWMDodG.tmp&Signature=xLXZeqfU4PHyNayuFEsc1P45LZg%3D");
         background-repeat: no-repeat;
         background-size:cover;
         background-position: center center;
@@ -123,7 +123,7 @@
             <div class="_login_form_mask"/>
             <div class="_login_form_content">
                 <div class="content_title">
-                    登录超级管理员
+                    超级管理员登录
                 </div>
                 <div style="padding: 0 40px">
                     <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">

@@ -18,7 +18,7 @@ const RouterConfig = {
 const router = new VueRouter(RouterConfig);
 
 router.beforeEach((to, from, next) => {
-    ViewUI.LoadingBar.start();
+    // ViewUI.LoadingBar.start();
     Util.title(to.meta.title);
     if(to.matched[0]["path"] === "*"){
         next();
@@ -38,7 +38,7 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to, from, next) => {
-    ViewUI.LoadingBar.finish();
+    // ViewUI.LoadingBar.finish();
     window.scrollTo(0, 0);
 });
 
