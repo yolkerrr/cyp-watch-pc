@@ -44,45 +44,150 @@
                 ._main_app{
                     background: #FFFFFF;
                     width: 100%;
-                    height: 100%;
+                    height:100% ;
+                    padding: 20px;
                     overflow: hidden;
                 }
             }
         }
     }
+    ._page_login{
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("./images/login-bg.jpg");
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position: center center;
+        position: relative;
+        ._login_form_mask{
+            position: absolute;
+            margin: auto;
+            width: 400px;
+            height: 300px;
+            padding: 20px 0;
+            background: #FFFFFF;
+            opacity: 0.4;
+            left: 60%;
+            top: 0;
+            right: 20px;
+            bottom: 0;
+            z-index: 100;
+            border-radius: 12px;
+        }
+        ._login_form_content{
+            position: absolute;
+            margin: auto;
+            width: 360px;
+            height: 260px;
+            padding: 20px 0;
+            background: #FFFFFF;
+            opacity: 1;
+            left: 60%;
+            top: 0;
+            right: 20px;
+            bottom: 0;
+            z-index: 101;
+            border-radius: 6px;
+            box-shadow:15px 0 15px -15px #000,
+            -15px 0 15px -15px #000;
+            .content_title{
+                width: 100%;
+                padding: 10px 0;
+                text-align: center;
+                font-weight: bold;
+                font-size: 20px;
+            }
+        }
+    }
 </style>
 <template>
-    <div class="_page">
-        <div class="_header"></div>
-        <div class="_content">
-            <div class="_content_siteBar">
-                <div class="_siteBar_content">
-                    <SiteBar :active="activeRoute"/>
+    <div>
+        <div  v-if="!isLogin" class="_page">
+            <div class="_header"></div>
+            <div class="_content">
+                <div class="_content_siteBar">
+                    <div class="_siteBar_content">
+                        <SiteBar :route="to"/>
+                    </div>
+                </div>
+                <div class="_content_main">
+                    <div class="_main_app">
+                        <router-view></router-view>
+                    </div>
                 </div>
             </div>
-            <div class="_content_main">
-                <div class="_main_app">
-                    <router-view></router-view>
+
+        </div>
+        <div class="_page_login"  v-else>
+            <div class="_login_form_mask"/>
+            <div class="_login_form_content">
+                <div class="content_title">
+                    登录超级管理员
+                </div>
+                <div style="padding: 0 40px">
+                    <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
+                        <FormItem label="账号名称" prop="name" >
+                            <Input type="password" v-model="formCustom.name"/>
+                        </FormItem>
+                        <FormItem label="账号密码" prop="password" >
+                            <Input type="password" v-model="formCustom.password"/>
+                        </FormItem>
+                        <FormItem>
+                            <Button type="primary" @click="handleSubmit('formCustom')">登 录</Button>
+                        </FormItem>
+                    </Form>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 <script>
     import Vue from "vue"
+    import config from "./libs/config"
     import SiteBar from "./components/SiteBar"
     Vue.component('SiteBar',SiteBar);
     export default {
         data () {
+            const validateName = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('账号不能为空'));
+                } else {
+                    if (this.formCustom.password !== '') {
+                        this.$refs.formCustom.validateField('password');
+                    }
+                    callback();
+                }
+            };
+            const validatePassword = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('密码不能为空'));
+                }else {
+                    callback();
+                }
+            };
             return {
-                activeRoute:""
+                isLogin:false,
+                to:null,
+                formCustom: {
+                    name: '',
+                    password: '',
+                },
+                ruleCustom: {
+                    name: [
+                        { validator: validateName, trigger: 'blur' }
+                    ],
+                    password: [
+                        { validator: validatePassword, trigger: 'blur' }
+                    ]
+                }
             }
         },
         watch:{
             $route(to,from){
                 if(to&&to.path){
-                    this.activeRoute = to.path.replace(/\//,"");
+                    this.isLogin = to.path === "/login";
+                    this.to = to;
                 }
             }
         },
@@ -93,7 +198,20 @@
 
         },
         methods: {
-
+            handleSubmit(name){
+                this.$refs[name].validate((valid) => {
+                    if(valid){
+                        let {formCustom} = this;
+                        window.localStorage.setItem(`${config.projectKey}-token`,JSON.stringify(formCustom));
+                        this.$Notice.success({
+                            title: '登录成功!'
+                        });
+                        this.$router.replace({
+                            path:"/index"
+                        })
+                    }
+                })
+            }
         }
     }
 </script>

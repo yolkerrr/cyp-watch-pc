@@ -14,6 +14,34 @@ const routers = [
         component: (resolve) => require(['./views/index.vue'], resolve)
     },
     {
+        path: '/login',
+        meta: {
+            title: '超级管理员登录页'
+        },
+        component: (resolve) => require(['./views/login.vue'], resolve)
+    },
+    {
+        path: '/watch/list',
+        meta: {
+            title: '手表列表'
+        },
+        component: (resolve) => require(['./views/watch/list.vue'], resolve)
+    },
+    {
+        path: '/watch/create',
+        meta: {
+            title: '新建手表'
+        },
+        component: (resolve) => require(['./views/watch/create.vue'], resolve)
+    },
+    {
+        path: '/watch/edit',
+        meta: {
+            title: '编辑手表'
+        },
+        component: (resolve) => require(['./views/watch/edit.vue'], resolve)
+    },
+    {
         path: '/error',
         meta: {
             title: '错误页面'

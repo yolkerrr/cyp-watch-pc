@@ -17,17 +17,13 @@ const RouterConfig = {
 };
 const router = new VueRouter(RouterConfig);
 
-window.checkLoginStatus = (to) =>{
-    return (to.path !== "/error" && to.path !== "/" && !!window.localStorage.getItem(`${config.projectKey}-token`));
-};
-
 router.beforeEach((to, from, next) => {
     ViewUI.LoadingBar.start();
     Util.title(to.meta.title);
     if(to.matched[0]["path"] === "*"){
         next();
     }else{
-        if(to.path !== "/error" && to.path !== "/" && to.path !== "login"){
+        if(to.path !== "/error" && to.path !== "/" && to.path !== "/login"){
             if(!window.localStorage.getItem(`${config.projectKey}-token`)){
                 next({
                     path:"login"
