@@ -1,10 +1,10 @@
 <style scoped lang="less">
-    .page-index{
+    .page-watch-edit{
 
     }
 </style>
 <template>
-    <div class="page-index">
+    <div class="page-watch-edit">
 
     </div>
 </template>

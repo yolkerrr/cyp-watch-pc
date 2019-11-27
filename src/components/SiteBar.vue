@@ -62,7 +62,6 @@
                         this.open = [];
                         this.active = "";
                     }
-                    console.log(this.open,this.active)
                     this.$nextTick(()=>{
                         this.$refs["_menu"].updateOpened();
                         this.$refs["_menu"].updateActiveName();

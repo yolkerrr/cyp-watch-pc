@@ -16,7 +16,7 @@
         ._header{
             height: 44px;
             width: 100%;
-            background-color: #03b8cc;
+            background-color: @mainColor;
             overflow: hidden;
         }
         ._content{
@@ -55,7 +55,7 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        background-image: url("https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/login-bg.jpg?Expires=1574776932&OSSAccessKeyId=TMP.hgxd3y692sdBNFRjmrQpa4mwLqNUSN3ns55KJ2AAwX66jRKKYUs6XfrZYYUFLSDp67eY9feBKQdt9aC3DQuq3FURcWqmwsjYYNUBpzBwPq2cMBWtvtZYVsqWWMDodG.tmp&Signature=xLXZeqfU4PHyNayuFEsc1P45LZg%3D");
+        background-image: url("https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/234608-15739191682c63.jpg");
         background-repeat: no-repeat;
         background-size:cover;
         background-position: center center;
