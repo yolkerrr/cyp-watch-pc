@@ -41,7 +41,7 @@
                     <Row v-for="row,rowIndex in priceFormContext" :key="rowIndex">
                         <Col span="12" v-for="item,itemIndex in row" :key="itemIndex">
                         <FormItem :label="item.label" :prop="item.prop" :required="!!item.require">
-                            <InputNumber v-model="formCustom[item.prop]" v-if="item.type === 'inputNumber'" style="width: 100%" min="1"/>
+                            <InputNumber v-model="formCustom[item.prop]" v-if="item.type === 'inputNumber'" style="width: 100%" :min="1"/>
                             <div v-else>
                                 暂时没有此类型
                             </div>
@@ -56,7 +56,7 @@
                             <Upload
                                     multiple
                                     type="drag"
-                                    action="//jsonplaceholder.typicode.com/posts/">
+                                    action="http://localhost:3001/upload">
                                 <div style="padding: 20px 0">
                                     <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                     <p>点击上传轮播图或者将图片拖拽到这上传</p>
