@@ -6,6 +6,7 @@ import Util from './libs/util';
 import App from './app.vue';
 import 'view-design/dist/styles/iview.css';
 import config from "./libs/config"
+import "./components"
 
 Vue.use(VueRouter);
 Vue.use(ViewUI);

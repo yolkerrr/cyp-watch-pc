@@ -6,40 +6,6 @@
             border-color: @mainColor!important;
         }
     }
-    .demo-spin-icon-load{
-        animation: ani-demo-spin 1s linear infinite;
-        -webkit-animation: ani-demo-spin 1s linear infinite;
-    }
-    @-webkit-keyframes ani-demo-spin {
-        0% {
-            -webkit-transform: rotate(0);
-            transform: rotate(0);
-        }
-
-        50% {
-            -webkit-transform: rotate(180deg);
-            transform: rotate(180deg);
-        }
-        100% {
-            -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-        }
-    }
-    @keyframes ani-demo-spin {
-        0% {
-            -webkit-transform: rotate(0);
-            transform: rotate(0);
-        }
-
-        50% {
-            -webkit-transform: rotate(180deg);
-            transform: rotate(180deg);
-        }
-        100% {
-            -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-        }
-    }
 </style>
 <template>
     <div class="page-watch-list">
@@ -256,6 +222,10 @@
             initTableHeight(){
                 this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 160;
             }
+        },
+        beforeRouteLeave(to,from,next){
+            window.onresize = null;
+            next();
         },
         mounted(){
             const vm = this;

@@ -20,19 +20,25 @@
     }
 </style>
 <template>
-    <div class="page-watch-create">
+    <div class="page-watch-create _p">
         <div class="create-form-panel">
             <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
                 <div class="panel-title">手表基本信息</div>
                 <div class="panel-content">
                     <Row v-for="row,rowIndex in baseFormContext" :key="rowIndex">
                         <Col span="12" v-for="item,itemIndex in row" :key="itemIndex">
-                            <FormItem :label="item.label" :prop="item.prop" :required="!!item.require">
-                                <Input v-model="formCustom[item.prop]" v-if="item.type === 'input'"/>
-                                <div v-else>
-                                    暂时没有此类型
-                                </div>
-                            </FormItem>
+                        <FormItem :label="item.label" :prop="item.prop" :required="!!item.require">
+                            <Input v-model="formCustom[item.prop]" v-if="item.type === 'input'" :placeholder="item.placeholder||'请填写'+item.label"/>
+                            <RadioGroup v-model="formCustom[item.prop]" v-else-if="item.type === 'radio'">
+                                <Radio v-for="radio,raIndex in item['radioModel']" :key="raIndex" :label="radio['label']" :value="radio['value']"/>
+                            </RadioGroup>
+                            <Select v-model="formCustom[item.prop]" clearable style="width:100%" :multiple="!!item.multiple" v-else-if="item.type === 'select'">
+                                <Option v-for="select,seIndex in item.selectModel" :value="select.value" :key="seIndex">{{ select.label }}</Option>
+                            </Select>
+                            <div v-else>
+                                暂时没有此类型
+                            </div>
+                        </FormItem>
                         </Col>
                     </Row>
                 </div>
@@ -52,39 +58,33 @@
                 <div class="panel-title">手表轮播图信息</div>
                 <div class="panel-content">
                     <Row>
-                        <Col span="12">
-                            <Upload
-                                    multiple
-                                    type="drag"
-                                    action="http://localhost:3001/upload">
-                                <div style="padding: 20px 0">
-                                    <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                    <p>点击上传轮播图或者将图片拖拽到这上传</p>
-                                </div>
-                            </Upload>
+                        <Col span="24" >
+                        <Uploader
+                                v-model="formCustom['slideUrls']"
+                                action="/upload"
+                                :beforeUpload="beforeUpload"
+                                :primaryKey="'slideUrls'"
+                        />
                         </Col>
-                    </Row>
-                    <Row>
-
                     </Row>
                 </div>
                 <div class="panel-title">手表详情图信息</div>
                 <div class="panel-content">
                     <Row>
-                        <Col span="12">
-                            <Upload
-                                    multiple
-                                    type="drag"
-                                    action="//jsonplaceholder.typicode.com/posts/">
-                                <div style="padding: 20px 0">
-                                    <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                    <p>点击上传详情图或者将图片拖拽到这上传</p>
-                                </div>
-                            </Upload>
+                        <Col span="24">
+                        <Uploader
+                                v-model="formCustom['detailUrls']"
+                                action="/upload"
+                                :beforeUpload="beforeUpload"
+                                :primaryKey="'detailUrls'"
+                        />
                         </Col>
                     </Row>
                 </div>
             </Form>
+        </div>
+        <div class="_f">
+            <Button type="primary" style="width: 150px" @click="handleSubmit">创 建</Button>
         </div>
     </div>
 </template>
@@ -95,68 +95,101 @@
     export default {
         mixins:[pageMixins],
         data:function () {
-            /*
-            {
-                "region":"oss-cn-shenzhen.aliyuncs.com",
-                "bucket":"cyp-watch",
-                "accessKeyId":"LTAI4FikuetJzkFGHqh3M3iE",
-                "accessKeySecret":"MWOWKtOSSP8y10shO2BEQnfuALDyCl"
+            const validateName = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('手表名称必填!'));
+                    return false;
+                }
+                callback();
+            };
+            const validateBrand =  (rule, value, callback) => {
+                if (!value || value.length === 0) {
+                    callback(new Error('品牌必选!'));
+                    return false;
+                }
+                callback();
+            };
+            return {
+                baseFormContext:[
+                    [
+                        {label:"手表名称",prop:"name",require:true,type:"input"},
+                        {label:"手表型号",prop:"model",type:"input"},
+                    ],
+                    [
+                        {label:"手表品牌",prop:"brand",require:true,type:"select",selectModel:[
+                            {label:"劳力士",value:"laolishi"},
+                            {label:"百达翡丽",value:"baidafeili"},
+                        ]},
+                        {label:"手表分类",prop:"classify",type:"select",selectModel:[
+                            {label:"男士",value:"man"},
+                            {label:"女士",value:"woman"},
+                        ]},
+                    ],
+                    [
+                        {label:"手表规格",prop:"spec",type:"select",selectModel:[
+                            {label:"绿色",value:"green"},
+                            {label:"白色",value:"white"},
+                            {label:"银色",value:"yin"},
+                        ],multiple:true},
+                        {label:"是否上架",prop:"status",type:"radio",radioModel:[
+                            {label:"上架",value:"Y"},
+                            {label:"下架",value:"N"},
+                        ],defaultValue:"Y"},
+                    ]
+                ],
+                priceFormContext:[
+                    [
+                        {label:"零售价",prop:"price",require:true,type:"inputNumber"},
+                        {label:"市场价",prop:"marketPrice",type:"inputNumber"},
+                    ],
+                ],
+                formCustom: {
+                    name: "",
+                    model: "",
+                    brand:"",
+                    classify:"",
+                    spec:[],
+                    status:"上架",
+                    price:1,
+                    marketPrice:1,
+                    slideUrls:[],
+                    detailUrls:[],
+                },
+                ruleCustom: {
+                    name:{
+                        validator:validateName, trigger: 'blur'
+                    },
+                    brand:{
+                        validator:validateBrand, trigger: 'blur'
+                    },
+                    price:{
+                        required:true,message:"零售价必填"
+                    }
+                }
             }
-            * */
-            const validateName = function () {
-
-            };
-            const validatePassword = function () {
-
-            };
-          return {
-              baseFormContext:[
-                  [
-                      {label:"手表名称",prop:"name",require:true,type:"input"},
-                      {label:"手表型号",prop:"model",type:"input"},
-                  ],
-                  [
-                      {label:"手表品牌",prop:"brand",require:true,type:"select",selectModel:[]},
-                      {label:"手表分类",prop:"classify",type:"select",selectModel:[]},
-                  ],
-                  [
-                      {label:"手表规格",prop:"spec",type:"select",selectModel:[],multiple:true},
-                      {label:"是否上架",prop:"status",type:"radio",radioModel:[],defaultValue:"Y"},
-                  ]
-              ],
-              priceFormContext:[
-                  [
-                      {label:"零售价",prop:"price",require:true,type:"inputNumber"},
-                      {label:"市场价",prop:"marketPrice",type:"inputNumber"},
-                  ],
-              ],
-              formCustom: {
-                  name: '',
-                  password: '',
-              },
-              ruleCustom: {
-                  name: [
-                      { validator: validateName, trigger: 'blur' }
-                  ],
-                  password: [
-                      { validator: validatePassword, trigger: 'blur' }
-                  ]
-              }
-          }
         },
         methods: {
-            handleStart () {
-                this.$Modal.info({
-                    title: 'Bravo',
-                    content: 'Now, enjoy the convenience of View UI.'
-                });
+            handleSubmit(){
+                this.$refs["formCustom"].validate((success)=>{
+                    if(!success){
+                        return false;
+                    }
+
+                })
             },
-            demo(){
-                console.log(utils.$GET("a"));
-            },
-            fetchData(){
-                console.log(this)
+            beforeUpload(file){
+                if(file.type.indexOf("image/")<0){
+                    this.$Notice.error({
+                        title: '上传文件错误',
+                        desc: '',
+                        render: h => {
+                            return h('span',"当前只能上传图片，请重新上传");
+                        }
+                    });
+                }
+                return file.type.indexOf("image/") > -1;
             }
+
         },
     }
 </script>
