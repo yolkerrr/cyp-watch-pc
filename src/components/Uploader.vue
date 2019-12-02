@@ -9,6 +9,7 @@
                 :on-error="uploadError"
                 :on-progress="uploading"
                 :show-upload-list="false"
+                :headers="{'Authorization':'token'}"
         >
             <div style="padding: 20px 0">
                 <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
@@ -108,12 +109,29 @@
                     }
                 });
             },
-            uploadSuccess(response, file, fileList){
+            uploadSuccess(response, file, fileListfileList){
                 this.$Spin.hide();
-                this.value.push(file.response.url);
+                if(response&&response.code === 200){
+                    this.$Notice.success({
+                        title: '上传成功!'
+                    });
+                    this.value.push(file.response.url);
+                }else if(response.url){
+                    this.$Notice.success({
+                        title: '上传成功!'
+                    });
+                    this.value.push(file.response.url);
+                }else{
+                    this.$Notice.error({
+                        title: '上传失败!'+response.message
+                    })
+                }
             },
             uploadError(error, file, fileList){
                 this.$Spin.hide();
+                this.$Notice.error({
+                    title: '上传失败!'+error
+                })
             }
         },
         created(){

@@ -84,7 +84,7 @@
             </Form>
         </div>
         <div class="_f">
-            <Button type="primary" style="width: 150px" @click="handleSubmit" :loading="loading">保 存</Button>
+            <Button type="primary" style="width: 150px" @click="handleSubmit" :loading="loading">创 建</Button>
         </div>
     </div>
 </template>
@@ -170,19 +170,6 @@
             }
         },
         methods: {
-            async fetchData(){
-                try{
-                    let result = await watchServices.getDetail({
-                        watchId:this.$route.query.id
-                    });
-                    Object.keys(this.formCustom).map((key)=>{
-                        if(key === "status")result["data"][key]==="Y"?"上架":"下架"
-                        this.formCustom[key] = result["data"][key]
-                    });
-                }catch (e){
-
-                }
-            },
             handleSubmit(){
                 if(this.loading)return;
                 this.$refs["formCustom"].validate(async(success)=>{
@@ -191,11 +178,10 @@
                     }
                     this.loading = true;
                     try{
-                        this.formCustom["status"] = this.formCustom["status"] === "上架"?"Y":"N";
-                        await watchServices.update({...this.formCustom,watchId:this.$route.query.id});
+                        await watchServices.create(this.formCustom);
                         this.loading = false;
                         this.$Notice.success({
-                            title: '编辑手表成功!'
+                            title: '新建手表成功!'
                         });
                         this.$router.replace({
                             path:"/watch/list",
@@ -219,5 +205,15 @@
                 return file.type.indexOf("image/") > -1;
             }
         },
+        async fetchData(){
+            try{
+                let result = await watchServices.getDetail({
+                    watchId:this.$route.query.id
+                });
+                console.log(result);
+            }catch (e){
+
+            }
+        }
     }
 </script>

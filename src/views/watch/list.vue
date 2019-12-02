@@ -12,10 +12,10 @@
         <div style="margin:0 0 20px 0">
             <Input search enter-button placeholder="输入手表名称,型号,规格搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
         </div>
-        <Table  ref="table" :columns="columns7" :data="data6" :no-data-text="'-- --'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
+        <Table  ref="table" :columns="columns7" :data="data" :no-data-text="'-- --'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
         <div style="margin: 20px;overflow: hidden">
             <div style="text-align: center">
-                <Page :total="100" :current="1" @on-change="changePage"></Page>
+                <Page :total="total" :current="current" @on-change="changePage" :page-size="size"></Page>
             </div>
         </div>
     </div>
@@ -44,19 +44,30 @@
                                 padding:"30px"
                             }},[
                                 h('img', {style: { width:"48px",height:"48px",verticalAlign: "middle"},attrs:{
-                                    src:params.row.img
+                                    src:params.row.slideUrls[0]
                                 }})
                             ])
                         }
                     },
                     {
                         title: '手表名称',
-                        key: 'name',
+                        key: 'watchName',
                         col:28,
                         ellipsis:true,
                         tooltip:true,
                         render: (h, params) => {
-                            return  h('span', { slot: 'content', style: { whiteSpace: 'normal', wordBreak: 'break-all',lineHeight:"30px",fontWeight:"bold"} },params.row.name)
+                            return  h('span', {
+                                slot: 'content',
+                                style: { whiteSpace: 'normal', wordBreak: 'break-all',lineHeight:"30px",fontWeight:"bold",cursor:"pointer"},
+                                on: {click: () => {
+                                    this.$router.push({
+                                        path:"/watch/detail",
+                                        query:{
+                                            id:params.row.watchId
+                                        }
+                                    })
+                                }}
+                            },params.row.watchName)
                         }
                     },
                     {
@@ -117,20 +128,46 @@
                                     style: {
                                         marginRight: '5px'
                                     },
-                                    on: {
-                                        click: () => {
-                                            this.show(params.index)
-                                        }
-                                    }
+                                    on: {click: () => {
+                                        this.$router.push({
+                                            path:"/watch/edit",
+                                            query:{
+                                                id:params.row.watchId
+                                            }
+                                        })
+                                    }}
                                 }, '编辑'),
                                 h('Button', {
                                     props: {
                                         type: params.row.status === "Y"?"error":"success",
                                         size: 'small'
                                     },
-                                    on: {
+                                    on:{
                                         click: () => {
-                                            this.remove(params.index)
+                                            this.$Modal.confirm({
+                                                render:(h)=>{
+                                                    return h(
+                                                        "p",{},[
+                                                            h(
+                                                                "span",
+                                                                "你即将要"
+                                                            ),
+                                                            h(
+                                                                "span",{style:{"color":"red",fontWeight:"bold"}},` ${params.row.status === "Y"?"下架":"上架"} `
+                                                            ),
+                                                            h(
+                                                                "strong",{style:{fontWeight:"bold"}},params.row.watchName
+                                                            ),
+                                                            h(
+                                                                "span"," ，确定吗?"
+                                                            )
+                                                        ]
+                                                    )
+                                                },
+                                                onOk:async()=>{
+                                                    await this.toggleStatus(params.row.watchId,params.row.status === "Y"?"N":"Y");
+                                                }
+                                            });
                                         }
                                     }
                                 },params.row.status === "Y"?"下架":"上架")
@@ -138,79 +175,35 @@
                         }
                     }
                 ],
-                data6: [
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Sportive运动系列 海神波塞冬3438.131.96.16.30机械男表",
-                        price: 5520,
-                        model:"3438.131.96.16.30",
-                        brand:"爱宝时",
-                        spec:"钢 蓝色 不锈钢",
-                        code:"63355",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/201704_13_3437_132_24_16_34_05435.jpg",
-                        id:1,
-                        status:"Y"
-                    },
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Ladies女士系列 浪漫星月 4391.832.20.16.15 机械女表（绝版）",
-                        price: 14640,
-                        model:"4391.832.20.16.15",
-                        brand:"爱宝时",
-                        spec:"真皮 蓝色 牛皮",
-                        code:"62885",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/b8018b2101b641f0816bd1bda15003ce.jpg",
-                        id:2
-                    },
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Sportive运动系列 海神波塞冬3438.131.96.16.30机械男表",
-                        price: 5520,
-                        model:"3438.131.96.16.30",
-                        brand:"爱宝时",
-                        spec:"钢 蓝色 不锈钢",
-                        code:"63355",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/201704_13_3437_132_24_16_34_05435.jpg",
-                        id:1
-                    },
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Ladies女士系列 浪漫星月 4391.832.20.16.15 机械女表（绝版）",
-                        price: 14640,
-                        model:"4391.832.20.16.15",
-                        brand:"爱宝时",
-                        spec:"真皮 蓝色 牛皮",
-                        code:"62885",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/b8018b2101b641f0816bd1bda15003ce.jpg",
-                        id:2
-                    },
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Sportive运动系列 海神波塞冬3438.131.96.16.30机械男表",
-                        price: 5520,
-                        model:"3438.131.96.16.30",
-                        brand:"爱宝时",
-                        spec:"钢 蓝色 不锈钢",
-                        code:"63355",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/201704_13_3437_132_24_16_34_05435.jpg",
-                        id:1
-                    },
-                    {
-                        name: "瑞士艺术制表大师爱宝时（EPOS）-Ladies女士系列 浪漫星月 4391.832.20.16.15 机械女表（绝版）",
-                        price: 14640,
-                        model:"4391.832.20.16.15",
-                        brand:"爱宝时",
-                        spec:"真皮 蓝色 牛皮",
-                        code:"62885",
-                        img:"https://cyp-watch.oss-cn-shenzhen.aliyuncs.com/watch-asset/b8018b2101b641f0816bd1bda15003ce.jpg",
-                        id:2
-                    },
-                ]
+                data:[],
+                current:1,
+                size:1,
+                total:1
             }
         },
         methods: {
-            changePage () {
-
+            async changePage (page) {
+                this.current = page;
+                await this.fetchData();
             },
             search(value){
                 console.log(value);
             },
-            fetchData(){},
+            async toggleStatus(watchId,status){
+                await watchServices.update({
+                    watchId,status
+                });
+                await this.fetchData();
+            },
+            async fetchData(){
+                let result =  await watchServices.getPage({
+                    page:this.current,
+                    size:this.size
+                });
+                this.total = result.total;
+                this.data = result.data;
+                this.current = result.current;
+            },
             initTableColumns(){
                 const reduceWidth = 170+40;
                 const width = window.document.body.clientWidth - reduceWidth;

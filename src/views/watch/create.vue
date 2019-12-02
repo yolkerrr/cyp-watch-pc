@@ -84,7 +84,7 @@
             </Form>
         </div>
         <div class="_f">
-            <Button type="primary" style="width: 150px" @click="handleSubmit">创 建</Button>
+            <Button type="primary" style="width: 150px" @click="handleSubmit" :loading="loading">创 建</Button>
         </div>
     </div>
 </template>
@@ -110,9 +110,10 @@
                 callback();
             };
             return {
+                loading:false,
                 baseFormContext:[
                     [
-                        {label:"手表名称",prop:"name",require:true,type:"input"},
+                        {label:"手表名称",prop:"watchName",require:true,type:"input"},
                         {label:"手表型号",prop:"model",type:"input"},
                     ],
                     [
@@ -144,7 +145,7 @@
                     ],
                 ],
                 formCustom: {
-                    name: "",
+                    watchName: "",
                     model: "",
                     brand:"",
                     classify:"",
@@ -156,7 +157,7 @@
                     detailUrls:[],
                 },
                 ruleCustom: {
-                    name:{
+                    watchName:{
                         validator:validateName, trigger: 'blur'
                     },
                     brand:{
@@ -170,11 +171,26 @@
         },
         methods: {
             handleSubmit(){
-                this.$refs["formCustom"].validate((success)=>{
+                if(this.loading)return;
+                this.$refs["formCustom"].validate(async(success)=>{
                     if(!success){
                         return false;
                     }
-
+                    this.loading = true;
+                    try{
+                        this.formCustom["status"] = this.formCustom["status"] === "上架"?"Y":"N";
+                        await watchServices.create(this.formCustom);
+                        this.loading = false;
+                        this.$Notice.success({
+                            title: '新建手表成功!'
+                        });
+                        this.$router.replace({
+                            path:"/watch/list",
+                            refresh:1
+                        });
+                    }catch (e){
+                        this.loading = false;
+                    }
                 })
             },
             beforeUpload(file){
@@ -189,7 +205,6 @@
                 }
                 return file.type.indexOf("image/") > -1;
             }
-
         },
     }
 </script>

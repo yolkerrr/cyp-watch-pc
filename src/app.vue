@@ -127,14 +127,14 @@
                 </div>
                 <div style="padding: 0 40px">
                     <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
-                        <FormItem label="账号名称" prop="name" >
-                            <Input type="password" v-model="formCustom.name"/>
+                        <FormItem label="账号名称" prop="userName" >
+                            <Input type="password" v-model="formCustom.userName"/>
                         </FormItem>
                         <FormItem label="账号密码" prop="password" >
                             <Input type="password" v-model="formCustom.password"/>
                         </FormItem>
                         <FormItem>
-                            <Button type="primary" @click="handleSubmit('formCustom')">登 录</Button>
+                            <Button type="primary" @click="handleSubmit('formCustom')" :loading="loading">登 录</Button>
                         </FormItem>
                     </Form>
                 </div>
@@ -144,6 +144,7 @@
 </template>
 <script>
     import Vue from "vue"
+    import * as userService from "./api/user"
     import config from "./libs/config"
     import SiteBar from "./components/SiteBar"
     Vue.component('SiteBar',SiteBar);
@@ -167,14 +168,15 @@
                 }
             };
             return {
+                loading:false,
                 isLogin:false,
                 to:null,
                 formCustom: {
-                    name: '',
+                    userName: '',
                     password: '',
                 },
                 ruleCustom: {
-                    name: [
+                    userName: [
                         { validator: validateName, trigger: 'blur' }
                     ],
                     password: [
@@ -199,16 +201,27 @@
         },
         methods: {
             handleSubmit(name){
-                this.$refs[name].validate((valid) => {
+                this.$refs[name].validate(async(valid) => {
                     if(valid){
                         let {formCustom} = this;
-                        window.localStorage.setItem(`${config.projectKey}-token`,JSON.stringify(formCustom));
-                        this.$Notice.success({
-                            title: '登录成功!'
-                        });
-                        this.$router.replace({
-                            path:"/index"
-                        })
+                        if(this.loading){
+                            return
+                        }
+                        this.loading = true;
+                        try{
+                            let {token} = await userService.login(formCustom);
+                            window.localStorage.setItem(`${config.projectKey}-token`,token);
+                            this.$Notice.success({
+                                title: '登录成功!'
+                            });
+                            this.$router.replace({
+                                path:"/index"
+                            });
+                            this.loading = false;
+                        }catch (e){
+                            this.loading = false;
+                            console.log(e);
+                        }
                     }
                 })
             }

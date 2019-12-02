@@ -4,6 +4,7 @@ import qs from "qs";
 import config from './config'
 import utils from './util'
 import {Message,Modal,Spin} from "view-design"
+axios.defaults.baseURL = window.location.origin;
 const fetch = (options) => {
     let {
         method = 'get',
@@ -31,8 +32,8 @@ const fetch = (options) => {
     let token = window.localStorage.getItem(`${config.projectKey}-token`)||'';
     let headers = {
         'Accept':'application/json, text/javascript, */*; q=0.01',
-        'Content-Type':'text/plain',
-        'token':token,
+        'Content-Type':'application/json',
+        'Authorization':token,
         "operaSource":"PC"
     };
     //请求配置
@@ -61,6 +62,7 @@ const fetch = (options) => {
         }
         return true;
     });
+    console.log(url);
     switch (method.toLowerCase()) {
         case 'get':
             return axios.get(url,requestConfig["get"]);
@@ -121,13 +123,14 @@ export default function request (options) {
         Spin.hide();
         let data = response.data;
         if((data.code !== 200) || (typeof data !== 'object')){
-            if(_isShowError) Modal.error({
-                title: "请求出错",
-                content: data.message?typeof data.message === "object"?JSON.stringify(data.message):data.message:JSON.stringify(response)
-            });
-            // if([44000,44001,44002,44003,44004].indexOf(data.code)>-1 && !options["notAuth"]){
-            //     window.location.href = `./index.html?token=${$GET()['token']}#/handle`;
-            // }
+            if([50014,50015,50016].indexOf(data.code)>-1 && !options["notAuth"]){
+                window.localStorage.removeItem(`${config.projectKey}-token`);
+                window.location.href = `/index.html#/login`;
+            }else{
+                if(_isShowError){
+                    throw new Error(data.message?typeof data.message === "object"?JSON.stringify(data.message):data.message:JSON.stringify(response))
+                }
+            }
         }else if(isCache){
             window.localStorage.setItem(cacheKey,JSON.stringify({response:data,cacheTime:new Date().getTime()}))
         }
@@ -135,11 +138,9 @@ export default function request (options) {
     }).catch((error) => {
         Modal.error({
             title: "服务器返回异常",
-            content: error.toString()||'网络异常'
+            content: error||'网络异常'
         });
         Spin.hide();
-        return {
-            hasError:true,message:error.toString()
-        }
+        throw new Error(error);
     })
 }
