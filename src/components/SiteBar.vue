@@ -24,7 +24,7 @@
                 open:[],
                 menu:[
                     {
-                        icon:"md-build",
+                        icon:"ios-clock",
                         name:"watch",
                         title:"手表管理",
                         children:[
@@ -33,9 +33,25 @@
                             },
                             {
                                 name:"create",title:"创建手表",to:"/watch/create"
+                            }
+                        ]
+                    },
+                    {
+                        icon:"md-build",
+                        name:"base",
+                        title:"基础设置",
+                        children:[
+                            {
+                                name:"brand",title:"品牌管理",to:"/base/brand"
                             },
                             {
-                                name:"edit",title:"编辑手表",to:"/watch/edit"
+                                name:"classify",title:"分类管理",to:"/base/classify"
+                            },
+                            {
+                                name:"spec",title:"规格管理",to:"/base/spec"
+                            },
+                            {
+                                name:"system",title:"系统管理",to:"/base/system"
                             }
                         ]
                     }

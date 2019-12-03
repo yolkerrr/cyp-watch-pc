@@ -69,7 +69,7 @@
                     </Row>
                 </div>
                 <div class="panel-title">手表详情图信息</div>
-                <div class="panel-content">
+                <div class="panel-content" style="margin-bottom: 60px">
                     <Row>
                         <Col span="24">
                         <Uploader

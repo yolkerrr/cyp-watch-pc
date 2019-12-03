@@ -3,7 +3,7 @@ import axios from "axios";
 import qs from "qs";
 import config from './config'
 import utils from './util'
-import {Message,Modal,Spin} from "view-design"
+import {Notice,Modal,Spin} from "view-design"
 axios.defaults.baseURL = window.location.origin;
 const fetch = (options) => {
     let {
@@ -124,8 +124,12 @@ export default function request (options) {
         let data = response.data;
         if((data.code !== 200) || (typeof data !== 'object')){
             if([50014,50015,50016].indexOf(data.code)>-1 && !options["notAuth"]){
+                Notice.error({
+                    title: "登录状态异常",
+                    content: "请重新登录"
+                });
                 window.localStorage.removeItem(`${config.projectKey}-token`);
-                window.location.href = `/index.html#/login`;
+                window.location.href = `/login`;
             }else{
                 if(_isShowError){
                     throw new Error(data.message?typeof data.message === "object"?JSON.stringify(data.message):data.message:JSON.stringify(response))

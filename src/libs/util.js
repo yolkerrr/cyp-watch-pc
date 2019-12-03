@@ -1,3 +1,4 @@
+import moment from "moment";
 let util = {
 
 };
@@ -26,6 +27,12 @@ util.$GET = () =>{
     return parseParam(window.location.search);
 };
 
-
+// 日期格式化
+Date.prototype.format = function (format) {
+    format = format.replace(/y/g, 'Y');
+    format = format.replace(/d/g, 'D');
+    format = format.replace(/h/g, 'H');
+    return moment(this).format(format)
+};
 
 export default util;

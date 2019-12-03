@@ -12,10 +12,10 @@
         <div style="margin:0 0 20px 0">
             <Input search enter-button placeholder="输入手表名称,型号,规格搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
         </div>
-        <Table  ref="table" :columns="columns7" :data="data" :no-data-text="'-- --'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
+        <Table  ref="table" :columns="columns7" :data="data" :no-data-text="'没有查询到更多数据!'" :tooltip-theme="'light'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
         <div style="margin: 20px;overflow: hidden">
             <div style="text-align: center">
-                <Page :total="total" :current="current" @on-change="changePage" :page-size="size"></Page>
+                <Page :total="total" :current="current" @on-change="changePage" :page-size="size" show-total></Page>
             </div>
         </div>
     </div>
@@ -177,7 +177,7 @@
                 ],
                 data:[],
                 current:1,
-                size:1,
+                size:10,
                 total:1
             }
         },

@@ -18,15 +18,21 @@
         </Upload>
         <Row>
             <div style="padding: 0 0 20px 0" :class="className">
-                <li style="display: inline-block;position: relative;margin-right: 20px;margin-top: 20px;"  v-for="img,index in value" :key="index" >
-                    <Icon @click="deleteIt(index)" type="ios-close-circle" size="30" style="color: #0a0a0a;position: absolute;top:-15px;right:-15px;cursor:pointer" />
-                    <img style="width:168px;height: 168px;vertical-align: middle;border: 1px solid #ececec" :src="img" alt="" @load="curPic(img,index)">
-                </li>
+                <viewer :images="value">
+                    <li style="display: inline-block;position: relative;margin-right: 20px;margin-top: 20px;"  v-for="img,index in value" :key="index" >
+                        <Icon @click="deleteIt(index)" type="ios-close-circle" size="30" style="color: #0a0a0a;position: absolute;top:-15px;right:-15px;cursor:pointer" />
+                        <img style="width:168px;height: 168px;vertical-align: middle;border: 1px solid #ececec;object-fit: cover" :src="img" alt="" @load="curPic(img,index)">
+                    </li>
+                </viewer>
             </div>
         </Row>
     </div>
 </template>
 <script>
+    import Vue from "vue"
+    import Viewer from 'v-viewer'
+    import 'viewerjs/dist/viewer.css'
+    Vue.use(Viewer);
     export default{
         data(){
             return{
@@ -78,20 +84,20 @@
                 this.value.splice(index,1);
             },
             curPic(src,index){
-                let image = new Image();
-                const vm = this;
-                image.onload = function (img) {
-                    let current = document.querySelectorAll(`.${vm.primaryKey}_image_gallery_holder li`)[index];
-                    let imgHolder = current.querySelector("img");
-                    const realWidth = img.path[0].width;
-                    const realHeight = img.path[0].height;
-                    if (realWidth > realHeight) {
-                        imgHolder.style.width = `${realWidth * (168 / realHeight)}px`;
-                    } else {
-                        imgHolder.style.height = `${realHeight * (168 / realWidth)}px`;
-                    }
-                };
-                image.src = src;
+//                let image = new Image();
+//                const vm = this;
+//                image.onload = function (img) {
+//                    let current = document.querySelectorAll(`.${vm.primaryKey}_image_gallery_holder li`)[index];
+//                    let imgHolder = current.querySelector("img");
+//                    const realWidth = img.path[0].width;
+//                    const realHeight = img.path[0].height;
+//                    if (realWidth > realHeight) {
+//                        imgHolder.style.width = `${realWidth * (168 / realHeight)}px`;
+//                    } else {
+//                        imgHolder.style.height = `${realHeight * (168 / realWidth)}px`;
+//                    }
+//                };
+//                image.src = src;
             },
             uploading(){
                 this.$Spin.show({

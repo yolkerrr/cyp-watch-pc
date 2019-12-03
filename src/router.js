@@ -42,6 +42,34 @@ const routers = [
         component: (resolve) => require(['./views/watch/edit.vue'], resolve)
     },
     {
+        path: '/base/brand',
+        meta: {
+            title: '品牌管理'
+        },
+        component: (resolve) => require(['./views/base/brand.vue'], resolve)
+    },
+    {
+        path: '/base/spec',
+        meta: {
+            title: '规格管理'
+        },
+        component: (resolve) => require(['./views/base/spec.vue'], resolve)
+    },
+    {
+        path: '/base/classify',
+        meta: {
+            title: '分类管理'
+        },
+        component: (resolve) => require(['./views/base/classify.vue'], resolve)
+    },
+    {
+        path: '/base/system',
+        meta: {
+            title: '系统管理'
+        },
+        component: (resolve) => require(['./views/base/system.vue'], resolve)
+    },
+    {
         path: '/error',
         meta: {
             title: '错误页面'
