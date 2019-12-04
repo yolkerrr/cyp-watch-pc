@@ -9,8 +9,6 @@
     </div>
 </template>
 <script>
-    import * as watchServices from "../api/watch"
-    import utils from "../libs/util"
     export default {
         name:"login",
         methods: {

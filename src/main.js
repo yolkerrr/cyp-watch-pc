@@ -18,6 +18,7 @@ const RouterConfig = {
 };
 const router = new VueRouter(RouterConfig);
 
+
 router.beforeEach((to, from, next) => {
     // ViewUI.LoadingBar.start();
     Util.title(to.meta.title);

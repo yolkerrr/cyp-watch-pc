@@ -2,6 +2,49 @@
     @import "styles/constant";
     @import "styles/function";
     @import "styles/clear";
+    ._low_b{
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        .CheckIE-container{
+            width: 90%;
+            height: 100%;
+            margin: auto;
+            .tc{
+                padding:20px;
+                word-break: break-all;
+                @media (max-width: 900px) {
+                    font-size: 24px
+                } /*>=1024的设备*/
+                @media (min-width: 1024px){
+                    font-size: 38px
+                } /*>=1024的设备*/
+
+                @media (min-width: 1100px) {
+                    font-size: 40px
+                } /*>=1024的设备*/
+                @media (min-width: 1280px) {
+                    font-size: 42px;
+                }
+
+                @media (min-width: 1366px) {
+
+                    font-size: 44px;
+                }
+
+                @media (min-width: 1440px) {
+                    font-size: 46px !important;
+                }
+
+                @media (min-width: 1680px) {
+                    font-size: 48px;
+                }
+                @media (min-width: 1920px) {
+                    font-size: 50px;
+                }
+            }
+        }
+    }
     ._page{
         position: absolute;
         left: 0;
@@ -103,44 +146,51 @@
 </style>
 <template>
     <div>
-        <div  v-if="!isLogin" class="_page">
-            <div class="_header"></div>
-            <div class="_content">
-                <div class="_content_siteBar">
-                    <div class="_siteBar_content">
-                        <SiteBar :route="to"/>
+        <div v-if="isLowB" class="_low_b">
+            <div class="CheckIE-container">
+                <div class="tc">对不起，当前系统仅提供给PC端使用，并且请使用Chrome（谷歌）或IE11访问系统</div>
+            </div>
+        </div>
+        <div v-else>
+            <div  v-if="!isLogin" class="_page">
+                <div class="_header"></div>
+                <div class="_content">
+                    <div class="_content_siteBar">
+                        <div class="_siteBar_content">
+                            <SiteBar :route="to"/>
+                        </div>
                     </div>
-                </div>
-                <div class="_content_main">
-                    <div class="_main_app">
-                        <router-view></router-view>
+                    <div class="_content_main">
+                        <div class="_main_app">
+                            <router-view></router-view>
+                        </div>
                     </div>
                 </div>
             </div>
-
-        </div>
-        <div class="_page_login"  v-else>
-            <div class="_login_form_mask"/>
-            <div class="_login_form_content">
-                <div class="content_title">
-                    超级管理员登录
-                </div>
-                <div style="padding: 0 40px">
-                    <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
-                        <FormItem label="账号名称" prop="userName" >
-                            <Input type="password" v-model="formCustom.userName"/>
-                        </FormItem>
-                        <FormItem label="账号密码" prop="password" >
-                            <Input type="password" v-model="formCustom.password"/>
-                        </FormItem>
-                        <FormItem>
-                            <Button type="primary" @click="handleSubmit('formCustom')" :loading="loading">登 录</Button>
-                        </FormItem>
-                    </Form>
+            <div class="_page_login"  v-else>
+                <div class="_login_form_mask"/>
+                <div class="_login_form_content">
+                    <div class="content_title">
+                        超级管理员登录
+                    </div>
+                    <div style="padding: 0 40px">
+                        <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
+                            <FormItem label="账号名称" prop="userName" >
+                                <Input type="password" v-model="formCustom.userName"/>
+                            </FormItem>
+                            <FormItem label="账号密码" prop="password" >
+                                <Input type="password" v-model="formCustom.password"/>
+                            </FormItem>
+                            <FormItem>
+                                <Button type="primary" @click="handleSubmit('formCustom')" :loading="loading">登 录</Button>
+                            </FormItem>
+                        </Form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 <script>
     import Vue from "vue"
@@ -148,6 +198,7 @@
     import config from "./libs/config"
     import SiteBar from "./components/SiteBar"
     Vue.component('SiteBar',SiteBar);
+
     export default {
         data () {
             const validateName = (rule, value, callback) => {
@@ -170,6 +221,7 @@
             return {
                 loading:false,
                 isLogin:false,
+                isLowB:false,
                 to:null,
                 formCustom: {
                     userName: '',
@@ -188,6 +240,7 @@
         watch:{
             $route(to,from){
                 if(to&&to.path){
+                    this.isLowB = this.isInvalidBrowser();
                     this.isLogin = to.path === "/login";
                     this.to = to;
                 }
@@ -200,6 +253,10 @@
 
         },
         methods: {
+            isInvalidBrowser() {
+                var userAgent = navigator.userAgent;
+                return !((userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1)||(userAgent.toLowerCase().match(/chrome/)&&userAgent.indexOf("Android")=== -1))
+            },
             handleSubmit(name){
                 this.$refs[name].validate(async(valid) => {
                     if(valid){
