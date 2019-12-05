@@ -61,7 +61,7 @@
                         <Col span="24" >
                         <Uploader
                                 v-model="formCustom['slideUrls']"
-                                action="/upload"
+                                action="/server/upload"
                                 :beforeUpload="beforeUpload"
                                 :primaryKey="'slideUrls'"
                         />
@@ -74,7 +74,7 @@
                         <Col span="24">
                         <Uploader
                                 v-model="formCustom['detailUrls']"
-                                action="/upload"
+                                action="/server/upload"
                                 :beforeUpload="beforeUpload"
                                 :primaryKey="'detailUrls'"
                         />

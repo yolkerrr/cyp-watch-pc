@@ -32,9 +32,7 @@
                             <RadioGroup v-model="formCustom[item.prop]" v-else-if="item.type === 'radio'">
                                 <Radio v-for="radio,raIndex in item['radioModel']" :key="raIndex" :label="radio['label']" :value="radio['value']"/>
                             </RadioGroup>
-                            <Select v-model="formCustom[item.prop]" clearable style="width:100%" :multiple="!!item.multiple" v-else-if="item.type === 'select'">
-                                <Option v-for="select,seIndex in item.selectModel" :value="select.value" :key="seIndex">{{ select.label }}</Option>
-                            </Select>
+                            <SelectMore :value="formCustom[item.prop]" v-else-if="item.type === 'select'" :primaryKey="item.primaryKey" @select-change="selectChange"/>
                             <div v-else>
                                 暂时没有此类型
                             </div>
@@ -61,7 +59,7 @@
                         <Col span="24" >
                         <Uploader
                                 v-model="formCustom['slideUrls']"
-                                action="/upload"
+                                action="/server/upload"
                                 :beforeUpload="beforeUpload"
                                 :primaryKey="'slideUrls'"
                         />
@@ -74,7 +72,7 @@
                         <Col span="24">
                         <Uploader
                                 v-model="formCustom['detailUrls']"
-                                action="/upload"
+                                action="/server/upload"
                                 :beforeUpload="beforeUpload"
                                 :primaryKey="'detailUrls'"
                         />
@@ -117,21 +115,11 @@
                         {label:"手表型号",prop:"model",type:"input"},
                     ],
                     [
-                        {label:"手表品牌",prop:"brand",require:true,type:"select",selectModel:[
-                            {label:"劳力士",value:"laolishi"},
-                            {label:"百达翡丽",value:"baidafeili"},
-                        ]},
-                        {label:"手表分类",prop:"classify",type:"select",selectModel:[
-                            {label:"男士",value:"man"},
-                            {label:"女士",value:"woman"},
-                        ]},
+                        {label:"手表品牌",prop:"brandId",require:true,type:"select",primaryKey:"brand"},
+                        {label:"手表分类",prop:"classifyId",type:"select",primaryKey:"classify"},
                     ],
                     [
-                        {label:"手表规格",prop:"spec",type:"select",selectModel:[
-                            {label:"绿色",value:"green"},
-                            {label:"白色",value:"white"},
-                            {label:"银色",value:"yin"},
-                        ],multiple:true},
+                        {label:"手表规格",prop:"specId",type:"select",primaryKey:"spec"},
                         {label:"是否上架",prop:"status",type:"radio",radioModel:[
                             {label:"上架",value:"Y"},
                             {label:"下架",value:"N"},
@@ -147,20 +135,21 @@
                 formCustom: {
                     watchName: "",
                     model: "",
-                    brand:"",
+                    brandId:"",
                     classify:"",
-                    spec:[],
+                    spec:"",
                     status:"上架",
                     price:1,
                     marketPrice:1,
                     slideUrls:[],
                     detailUrls:[],
                 },
+                formData:{},
                 ruleCustom: {
                     watchName:{
                         validator:validateName, trigger: 'blur'
                     },
-                    brand:{
+                    brandId:{
                         validator:validateBrand, trigger: 'blur'
                     },
                     price:{
@@ -170,6 +159,9 @@
             }
         },
         methods: {
+            selectChange(data){
+                this.formCustom = {...this.formCustom,...data}
+            },
             handleSubmit(){
                 if(this.loading)return;
                 this.$refs["formCustom"].validate(async(success)=>{
@@ -177,6 +169,8 @@
                         return false;
                     }
                     this.loading = true;
+                    console.log(this.formCustom);
+                    return
                     try{
                         this.formCustom["status"] = this.formCustom["status"] === "上架"?"Y":"N";
                         await watchServices.create(this.formCustom);

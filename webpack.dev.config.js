@@ -20,14 +20,15 @@ module.exports = merge(webpackBaseConfig, {
     devServer:{
         port:8888,
         proxy: {
-            '/pc': {
+            '/server': {
                 target: 'http://localhost:3001/',
                 changeOrigin: true,
-                pathRewrite: {'^/pc' : ''}
+                pathRewrite: {'^/server' : ''}
             },
-            '/upload':{
+            '/server/upload':{
                 target: 'http://localhost:3001/',
-                changeOrigin: true
+                changeOrigin: true,
+                pathRewrite: {'^/server' : ''}
             }
         },
     },

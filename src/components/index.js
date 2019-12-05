@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Uploader from "./Uploader.vue"
-import Image from "./Image.vue"
+import SelectMore from "./SelectMore.vue"
 
 Vue.component("Uploader",Uploader);
-Vue.component("MyImage",Image);
+Vue.component("SelectMore",SelectMore);

@@ -253,9 +253,9 @@
 
         },
         methods: {
-            isInvalidBrowser() {
+             isInvalidBrowser() {
                 var userAgent = navigator.userAgent;
-                return !((userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1)||(userAgent.toLowerCase().match(/chrome/)&&userAgent.indexOf("Android")=== -1))
+                return !((userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1)||(userAgent.toLowerCase().match(/chrome/)&&userAgent.toLowerCase().indexOf("android")=== -1))
             },
             handleSubmit(name){
                 this.$refs[name].validate(async(valid) => {
