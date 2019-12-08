@@ -62,7 +62,6 @@ const fetch = (options) => {
         }
         return true;
     });
-    console.log(url);
     switch (method.toLowerCase()) {
         case 'get':
             return axios.get(url,requestConfig["get"]);

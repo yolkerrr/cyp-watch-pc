@@ -51,6 +51,9 @@
                                 name:"spec",title:"规格管理",to:"/base/spec"
                             },
                             {
+                                name:"comment",title:"留言管理",to:"/base/comment"
+                            },
+                            {
                                 name:"system",title:"系统管理",to:"/base/system"
                             }
                         ]

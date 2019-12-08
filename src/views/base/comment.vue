@@ -138,13 +138,13 @@
                                         marginRight: '5px'
                                     },
                                     on: {click: () => {
-                                        //todo edit
-                                        this.actionType = "edit";
-                                        this.value3 = true;
-                                        this.currentspec = params.row;
-                                        this.formData["spec"] = params.row["spec"];
-                                        this.formData["status"] = params.row["status"] === "Y" ? "启用" : "停用";
-                                    }}
+                                            //todo edit
+                                            this.actionType = "edit";
+                                            this.value3 = true;
+                                            this.currentspec = params.row;
+                                            this.formData["spec"] = params.row["spec"];
+                                            this.formData["status"] = params.row["status"] === "Y" ? "启用" : "停用";
+                                        }}
                                 }, '编 辑'),
                                 h('Button', {
                                     props: {

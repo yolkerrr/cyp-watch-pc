@@ -61,6 +61,14 @@
             width: 100%;
             background-color: @mainColor;
             overflow: hidden;
+            position: relative;
+            text-align: left;
+            .logo-img{
+                height: 44px;
+                width: auto;
+                vertical-align: middle;
+                cursor:pointer;
+            }
         }
         ._content{
             .flex_item();
@@ -153,7 +161,9 @@
         </div>
         <div v-else>
             <div  v-if="!isLogin" class="_page">
-                <div class="_header"></div>
+                <div class="_header">
+                    <img class="logo-img" src="./images/logo.png" alt="" @click="goIndex">
+                </div>
                 <div class="_content">
                     <div class="_content_siteBar">
                         <div class="_siteBar_content">
@@ -253,7 +263,14 @@
 
         },
         methods: {
-             isInvalidBrowser() {
+            goIndex(){
+                if(this.$route.path !== "/index" || this.$route.path !== "/" ){
+                    this.$router.replace({
+                        path:"/index"
+                    })
+                }
+            },
+            isInvalidBrowser() {
                 var userAgent = navigator.userAgent;
                 return !((userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1)||(userAgent.toLowerCase().match(/chrome/)&&userAgent.toLowerCase().indexOf("android")=== -1))
             },

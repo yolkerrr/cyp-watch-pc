@@ -18,6 +18,16 @@ export default {
         },
         closeLoading(){
             this.$Spin.hide();
+        },
+        async fastSearch(filter){
+            try{
+                this.openLoading("查找中");
+                this.fetchData && await this.fetchData(filter,true);
+                this.closeLoading();
+            }catch (e){
+
+            }
+
         }
     },
     async created(){

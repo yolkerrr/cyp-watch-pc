@@ -10,7 +10,7 @@
 <template>
     <div class="page-watch-list">
         <div style="margin:0 0 20px 0">
-            <Input search enter-button placeholder="输入手表名称,型号,规格搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
+            <Input search enter-button placeholder="请输入手表名称搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
         </div>
         <Table  ref="table" :columns="columns7" :data="data" :no-data-text="'没有查询到更多数据!'" :tooltip-theme="'light'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
         <div style="margin: 20px;overflow: hidden">
@@ -60,12 +60,12 @@
                                 slot: 'content',
                                 style: { whiteSpace: 'normal', wordBreak: 'break-all',lineHeight:"30px",fontWeight:"bold",cursor:"pointer"},
                                 on: {click: () => {
-                                    this.$router.push({
-                                        path:"/watch/detail",
-                                        query:{
-                                            id:params.row.watchId
-                                        }
-                                    })
+                                    // this.$router.push({
+                                    //     path:"/watch/detail",
+                                    //     query:{
+                                    //         id:params.row.watchId
+                                    //     }
+                                    // })
                                 }}
                             },params.row.watchName)
                         }
@@ -186,8 +186,8 @@
                 this.current = page;
                 await this.fetchData();
             },
-            search(value){
-                console.log(value);
+            async search(value){
+                this.fastSearch({watchName:value})
             },
             async toggleStatus(watchId,status){
                 await watchServices.update({
@@ -195,10 +195,16 @@
                 });
                 await this.fetchData();
             },
-            async fetchData(){
+            async fetchData(filter={},reset = false){
+                if(reset){
+                    this.current = 1;
+                    this.total = 1;
+                }
                 let result =  await watchServices.getPage({
+                    loading:true,
                     page:this.current,
-                    size:this.size
+                    size:this.size,
+                    filter
                 });
                 this.total = result.total;
                 this.data = result.data;

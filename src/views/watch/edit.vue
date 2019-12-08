@@ -32,9 +32,7 @@
                             <RadioGroup v-model="formCustom[item.prop]" v-else-if="item.type === 'radio'">
                                 <Radio v-for="radio,raIndex in item['radioModel']" :key="raIndex" :label="radio['label']" :value="radio['value']"/>
                             </RadioGroup>
-                            <Select v-model="formCustom[item.prop]" clearable style="width:100%" :multiple="!!item.multiple" v-else-if="item.type === 'select'">
-                                <Option v-for="select,seIndex in item.selectModel" :value="select.value" :key="seIndex">{{ select.label }}</Option>
-                            </Select>
+                            <SelectMore :value="formCustom[item.prop]" v-else-if="item.type === 'select'" :primaryKey="item.primaryKey" @select-change="selectChange"/>
                             <div v-else>
                                 暂时没有此类型
                             </div>
@@ -69,7 +67,7 @@
                     </Row>
                 </div>
                 <div class="panel-title">手表详情图信息</div>
-                <div class="panel-content">
+                <div class="panel-content" style="margin-bottom: 60px">
                     <Row>
                         <Col span="24">
                         <Uploader
@@ -117,21 +115,11 @@
                         {label:"手表型号",prop:"model",type:"input"},
                     ],
                     [
-                        {label:"手表品牌",prop:"brand",require:true,type:"select",selectModel:[
-                            {label:"劳力士",value:"laolishi"},
-                            {label:"百达翡丽",value:"baidafeili"},
-                        ]},
-                        {label:"手表分类",prop:"classify",type:"select",selectModel:[
-                            {label:"男士",value:"man"},
-                            {label:"女士",value:"woman"},
-                        ]},
+                        {label:"手表品牌",prop:"brandId",require:true,type:"select",primaryKey:"brand"},
+                        {label:"手表分类",prop:"classifyId",type:"select",primaryKey:"classify"},
                     ],
                     [
-                        {label:"手表规格",prop:"spec",type:"select",selectModel:[
-                            {label:"绿色",value:"green"},
-                            {label:"白色",value:"white"},
-                            {label:"银色",value:"yin"},
-                        ],multiple:true},
+                        {label:"手表规格",prop:"specId",type:"select",primaryKey:"spec"},
                         {label:"是否上架",prop:"status",type:"radio",radioModel:[
                             {label:"上架",value:"Y"},
                             {label:"下架",value:"N"},
@@ -148,19 +136,23 @@
                     watchName: "",
                     model: "",
                     brand:"",
+                    brandId:"",
                     classify:"",
-                    spec:[],
+                    classifyId:"",
+                    spec:"",
+                    specId:"",
                     status:"上架",
                     price:1,
                     marketPrice:1,
                     slideUrls:[],
                     detailUrls:[],
                 },
+                formData:{},
                 ruleCustom: {
                     watchName:{
                         validator:validateName, trigger: 'blur'
                     },
-                    brand:{
+                    brandId:{
                         validator:validateBrand, trigger: 'blur'
                     },
                     price:{
@@ -176,12 +168,15 @@
                         watchId:this.$route.query.id
                     });
                     Object.keys(this.formCustom).map((key)=>{
-                        if(key === "status")result["data"][key]==="Y"?"上架":"下架"
+                        if(key === "status")result["data"][key]==="Y"?result["data"][key] = "上架":result["data"][key] = "下架";
                         this.formCustom[key] = result["data"][key]
                     });
                 }catch (e){
 
                 }
+            },
+            selectChange(data){
+                this.formCustom = {...this.formCustom,...data}
             },
             handleSubmit(){
                 if(this.loading)return;

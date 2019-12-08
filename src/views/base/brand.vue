@@ -242,7 +242,7 @@
                 await this.fetchData();
             },
             search(value){
-                console.log(value);
+                this.fastSearch({brand:value});
             },
             async toggleStatus(brandId,status){
                 await baseServices.update("brand",{
@@ -250,10 +250,15 @@
                 });
                 await this.fetchData();
             },
-            async fetchData(){
+            async fetchData(filter={},reset=false){
+                if(reset){
+                    this.current = 1;
+                    this.total = 1;
+                }
                 let result =  await baseServices.getPage("brand",{
                     page:this.current,
-                    size:this.size
+                    size:this.size,
+                    filter
                 });
                 this.total = result.total;
                 this.data = result.data;

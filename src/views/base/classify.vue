@@ -242,7 +242,7 @@
                 await this.fetchData();
             },
             search(value){
-                console.log(value);
+                this.fastSearch({classify:value});
             },
             async toggleStatus(classifyId,status){
                 await baseServices.update("classify",{
@@ -250,10 +250,14 @@
                 });
                 await this.fetchData();
             },
-            async fetchData(){
+            async fetchData(filter={},reset=false){
+                if(reset){
+                    this.current = 1;
+                    this.total = 1;
+                }
                 let result =  await baseServices.getPage("classify",{
                     page:this.current,
-                    size:this.size
+                    size:this.size,filter
                 });
                 this.total = result.total;
                 this.data = result.data;

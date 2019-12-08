@@ -70,6 +70,13 @@ const routers = [
         component: (resolve) => require(['./views/base/system.vue'], resolve)
     },
     {
+        path: '/base/comment',
+        meta: {
+            title: '留言管理'
+        },
+        component: (resolve) => require(['./views/base/comment.vue'], resolve)
+    },
+    {
         path: '/error',
         meta: {
             title: '错误页面'
