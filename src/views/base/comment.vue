@@ -10,8 +10,8 @@
 <template>
     <div class="page-watch-list">
         <div style="margin:0 0 20px 0;position: relative">
-            <Input search enter-button placeholder="输入规格关键字搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
-            <Button type="primary" style="position: absolute;right:20px;top:0" @click="value3=true;actionType='new'">新建规格</Button>
+            <Input search enter-button placeholder="输入留言关键字搜索" v-model="keyWords" style="width: 300px" @on-search="search"/>
+            <Button type="primary" style="position: absolute;right:20px;top:0" @click="value3=true;actionType='new'">新建留言</Button>
         </div>
         <Table  ref="table" :columns="columns7" :data="data" :no-data-text="'没有查询到更多数据!'" :tooltip-theme="'light'" :loading="loading" :width="'calc(100% - 40px)'" :max-height="tableHeight"></Table>
         <div style="margin: 20px;overflow: hidden">
@@ -20,7 +20,7 @@
             </div>
         </div>
         <Drawer
-                :title="actionType==='new'?'新建规格':'编辑规格'"
+                :title="actionType==='new'?'新建留言':'编辑留言'"
                 v-model="value3"
                 width="720"
                 :mask-closable="false"
@@ -29,9 +29,21 @@
             <Form :model="formData" :rules="ruleCustom" ref="formCustom" :label-width="80">
                 <Row>
                     <Col span="24">
-                    <FormItem label="规格名字" :prop="'spec'" required>
-                        <Input v-model="formData.spec" placeholder="请输入规格名字" />
+                    <FormItem label="留言名字" :prop="'comment'" required>
+                        <Input v-model="formData.comment" type="textarea" :autosize="{minRows: 4,maxRows: 8}" placeholder="请输入留言，最多50字" />
                     </FormItem>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="24">
+                        <FormItem label="上传图片" :prop="'imgList'">
+                            <Uploader
+                                    v-model="formData['imgList']"
+                                    action="/server/upload"
+                                    :beforeUpload="beforeUpload"
+                                    :primaryKey="'imgList'"
+                            />
+                        </FormItem>
                     </Col>
                 </Row>
                 <Row>
@@ -44,13 +56,6 @@
                     </FormItem>
                     </Col>
                 </Row>
-                <!--<div v-if="actionType=== 'new'" style="margin-bottom: 20px ;">-->
-                <!--<Divider dashed />-->
-                <!--<p class="tips" style="margin-bottom: 20px ; line-height: 26px; color: #999;">-->
-                <!--在下面的文本框输入多个字段并用 <b style="color: red">/</b> 分割可以实现一次性创建多个规格，比如"百达翡丽/卡西欧/浪琴",注意不能添加系统已有的规格，若当前文本框有值，则优先创建文本框的字段-->
-                <!--</p>-->
-                <!--<Input v-model="multipleText" type="textarea" :autosize="{minRows: 4,maxRows: 8}" placeholder="请输入正确的字段，例如 百达翡丽/卡西欧/浪琴" />-->
-                <!--</div>-->
             </Form>
             <div class="demo-drawer-footer">
                 <Button style="margin-right: 8px" @click="value3 = false">取 消</Button>
@@ -61,16 +66,19 @@
 </template>
 <script>
     import * as baseServices from "@/api/base"
-    import utils from "@/libs/util"
     import pageMixins from "@/mixins/page"
     export default {
-        name:"base-spec",
+        name:"base-comment",
         mixins:[pageMixins],
         data:function () {
             const mainColor = "#6CF";
             const validateName = (rule, value, callback) => {
                 if (value === '') {
-                    callback(new Error('规格名称必填!'));
+                    callback(new Error('留言名称必填!'));
+                    return false;
+                }
+                if(value.length > 50){
+                    callback(new Error('留言内容至多50字!'));
                     return false;
                 }
                 callback();
@@ -89,16 +97,16 @@
                 tableHeight:450,
                 columns7: [
                     {
-                        title: '规格名称',
-                        key: 'spec',
+                        title: '留言内容',
+                        key: 'comment',
                         col:64,
                         ellipsis:true,
                         tooltip:true,
                         render: (h, params) => {
                             return  h('span', {
-                                slot: 'content',
+                                slot: 'comment',
                                 style: { whiteSpace: 'normal', wordBreak: 'break-all',lineHeight:"30px",fontWeight:"bold",cursor:"pointer"},
-                            },params.row.spec)
+                            },params.row.comment)
                         }
                     },
                     {
@@ -141,8 +149,9 @@
                                             //todo edit
                                             this.actionType = "edit";
                                             this.value3 = true;
-                                            this.currentspec = params.row;
-                                            this.formData["spec"] = params.row["spec"];
+                                            this.currentcomment = params.row;
+                                            this.formData["comment"] = params.row["comment"];
+                                            this.formData["imgList"] = params.row["imgList"];
                                             this.formData["status"] = params.row["status"] === "Y" ? "启用" : "停用";
                                         }}
                                 }, '编 辑'),
@@ -165,7 +174,7 @@
                                                                 "span",{style:{"color":"red",fontWeight:"bold"}},` ${params.row.status === "Y"?"停用":"启用"} `
                                                             ),
                                                             h(
-                                                                "strong",{style:{fontWeight:"bold"}},params.row.spec
+                                                                "strong",{style:{fontWeight:"bold"}},"这条留言"
                                                             ),
                                                             h(
                                                                 "span"," ，确定吗?"
@@ -174,7 +183,7 @@
                                                     )
                                                 },
                                                 onOk:async()=>{
-                                                    await this.toggleStatus(params.row.specId,params.row.status === "Y"?"N":"Y");
+                                                    await this.toggleStatus(params.row.commentId,params.row.status === "Y"?"N":"Y");
                                                 }
                                             });
                                         }
@@ -190,22 +199,35 @@
                 total:1,
                 value3:false,
                 submitting:false,
-                currentspec:null,
+                currentcomment:null,
                 formData:{
-                    spec:"",
+                    comment:"",
+                    imgList:[],
                     status:"启用"
                 },
                 ruleCustom: {
-                    spec:{
+                    comment:{
                         validator:validateName,trigger: 'blur'
                     }
                 }
             }
         },
         methods: {
-            async toggleStatus(specId,status){
-                await baseServices.update("spec",{
-                    specId,status
+            beforeUpload(file){
+                if(file.type.indexOf("image/")<0){
+                    this.$Notice.error({
+                        title: '上传文件错误',
+                        desc: '',
+                        render: h => {
+                            return h('span',"当前只能上传图片，请重新上传");
+                        }
+                    });
+                }
+                return file.type.indexOf("image/") > -1;
+            },
+            async toggleStatus(commentId,status){
+                await baseServices.update("comment",{
+                    commentId,status
                 })
             },
             submitForm(){
@@ -217,18 +239,18 @@
                         this.submitting = true;
                         let obj = {...this.formData,status:this.formData["status"] === "启用" ? "Y" : "N"};
                         if(this.actionType !== "new"){
-                            obj["specId"] = this.currentspec["specId"];
+                            obj["commentId"] = this.currentcomment["commentId"];
                         }
                         try{
-                            await baseServices[this.actionType==="new"?"create":"update"]("spec",obj);
+                            await baseServices[this.actionType==="new"?"create":"update"]("comment",obj);
                             this.submitting = false;
                             this.value3 = false;
-                            this.currentspec = null;
+                            this.currentcomment = null;
                             this.formData = {
                                 status:"启用"
                             };
                             this.$Notice.success({
-                                title:`${this.actionType==="new"?"新建":"编辑"}规格成功!`
+                                title:`${this.actionType==="new"?"新建":"编辑"}留言成功!`
                             });
                             this.fetchData();
                         }catch (e){
@@ -242,11 +264,11 @@
                 await this.fetchData();
             },
             search(value){
-                this.fastSearch({spec:value});
+                this.fastSearch({comment:value});
             },
-            async toggleStatus(specId,status){
-                await baseServices.update("spec",{
-                    specId,status
+            async toggleStatus(commentId,status){
+                await baseServices.update("comment",{
+                    commentId,status
                 });
                 await this.fetchData();
             },
@@ -255,7 +277,7 @@
                     this.current = 1;
                     this.total = 1;
                 }
-                let result =  await baseServices.getPage("spec",{
+                let result =  await baseServices.getPage("comment",{
                     page:this.current,
                     size:this.size,filter
                 });

@@ -25,3 +25,21 @@ export async function update(base,data) {
         data
     })
 }
+
+//获取系统信息
+export async function getSysInfo() {
+    return request({
+        url:`${config.apiPrefix}/sys/info`,
+        method:"post",
+        data:{}
+    })
+}
+
+//更新系统信息
+export async function updateSysInfo(data) {
+    return request({
+        url:`${config.apiPrefix}/sys/update`,
+        method:"post",
+        data
+    })
+}

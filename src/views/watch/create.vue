@@ -169,8 +169,6 @@
                         return false;
                     }
                     this.loading = true;
-                    console.log(this.formCustom);
-                    return
                     try{
                         this.formCustom["status"] = this.formCustom["status"] === "上架"?"Y":"N";
                         await watchServices.create(this.formCustom);
